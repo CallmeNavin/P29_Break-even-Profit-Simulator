@@ -4,9 +4,9 @@ st.set_page_config(page_title="Break-even Revenue Simulator", layout='wide')
 st.title("Break-even Revenue Simulator")
 st.header("Input")
 
-revenue = st.number_input("Revenue", min_value=0, value=None)
-variable = st.number_input("Variable Cost", min_value=0, value=None)
-fixed = st.number_input("Fixed Cost", min_value=0, value=None)
+revenue = st.number_input("Revenue", min_value=0, value=10)
+variable = st.number_input("Variable Cost", min_value=0, value=10)
+fixed = st.number_input("Fixed Cost", min_value=0, value=10)
 contribution = revenue - variable
 
 calculate = st.button("Calculate")
