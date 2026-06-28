@@ -54,10 +54,28 @@ else:
         df_chart = pd.DataFrame({"Revenue": revenue_range})
         variable_ratio = variable / revenue
         df_chart["Profit"] = (df_chart["Revenue"] - df_chart["Revenue"] * variable_ratio - fixed)
-        profit_line = (alt.Chart(df_chart).mark_line(point=True).encode(x=alt.X("Revenue:Q", title="Revenue"), y=alt.Y("Profit:Q", title="Profit"),tooltip=["Revenue", "Profit"])) # markline: tạo line chart, cột x, y với type là quantitive (số), có tooltip khi rê chuột vào là hiện info
-        break_even_rule = (alt.Chart(pd.DataFrame({"Break Even Revenue": [break_even_revenue]})).mark_rule(strokeDash=[6, 6]).encode(x="Revenue:Q")) # tạo df mới chỉ có 1 dòng là cái break-even revenue, strokedash: đường nét đứt
+        positive_area = (
+            alt.Chart(df_chart[df_chart["Profit"] >= 0])
+            .mark_area(color="green", opacity=0.35)
+            .encode(
+                x=alt.X("Revenue:Q", title="Revenue"),
+                y=alt.Y("Profit:Q", title="Profit"),
+                tooltip=["Revenue", "Profit"]
+            )
+        )
+        negative_area = (
+            alt.Chart(df_chart[df_chart["Profit"] < 0])
+            .mark_area(color="red", opacity=0.35)
+            .encode(
+                x="Revenue:Q",
+                y="Profit:Q",
+                tooltip=["Revenue", "Profit"]
+            )
+        )
+        profit_line = (alt.Chart(df_chart).mark_line(color="#1565C0", point=True, strokeWidth=3).encode(x="Revenue:Q",y="Profit:Q",tooltip=["Revenue", "Profit"]))
+        break_even_rule = (alt.Chart(pd.DataFrame({"Break Even Revenue": [break_even_revenue]})).mark_rule(strokeDash=[6, 6]).encode(x="Break Even Revenue:Q")) # tạo df mới chỉ có 1 dòng là cái break-even revenue, strokedash: đường nét đứt
         current_revenue_rule = (alt.Chart(pd.DataFrame({"Revenue": [revenue]})).mark_rule().encode(x="Revenue:Q"))
-        st.altair_chart((profit_line + break_even_rule + current_revenue_rule).properties(height=350),use_container_width=True) # combine 3 cái layer trên thành 1 cái chart. Properties height 350: chart cao 350 pixel, use_container_width=True: chart rộng bằng container, nếu k thì chart sẽ có chiều dài mặc định
+        st.altair_chart((positive_area + negative_area  + profit_line + break_even_rule + current_revenue_rule).properties(height=350),use_container_width=True) # combine 3 cái layer trên thành 1 cái chart. Properties height 350: chart cao 350 pixel, use_container_width=True: chart rộng bằng container, nếu k thì chart sẽ có chiều dài mặc định
     with tab2:
         st.subheader("Scenario Analysis")
         revenue_growth = st.slider("Revenue Growth (%)", -50, 100, 0) # st.slider(label,min,max,default)
